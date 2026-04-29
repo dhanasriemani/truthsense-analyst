@@ -25,10 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stats.history.length > 0) {
             noActivity.style.display = 'none';
             logBody.innerHTML = stats.history.slice(-5).reverse().map(item => `
-                <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 0.75rem 0; color: var(--text-secondary);">${item.time}</td>
-                    <td style="padding: 0.75rem 0;"><span style="color: ${item.result === 'Real' ? 'var(--success)' : (item.result === 'Fake' ? 'var(--danger)' : 'var(--warning)')}; font-weight: 600;">${item.result}</span></td>
-                    <td style="padding: 0.75rem 0;">${item.confidence}%</td>
+                <tr>
+                    <td>${item.time}</td>
+                    <td><span style="color: ${item.result === 'Real' ? 'var(--success)' : (item.result === 'Fake' ? 'var(--danger)' : 'var(--warning)')}; font-weight: 600;">${item.result}</span></td>
+                    <td style="font-family: 'JetBrains Mono', monospace;">${item.confidence}%</td>
                 </tr>
             `).join('');
         } else {
@@ -56,55 +56,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('reset-stats').addEventListener('click', () => {
-        if (confirm('Are you sure you want to reset all session data?')) {
+        if (confirm('Reset session database?')) {
             stats = { total: 0, real: 0, fake: 0, history: [] };
             localStorage.removeItem('truthsense_stats');
             updateStatsUI();
         }
     });
 
-    // Initialize UI
     updateStatsUI();
 
     analyzeBtn.addEventListener('click', async () => {
         const text = newsInput.value.trim();
-        
-        if (!text) {
-            alert('Please enter some text to analyze.');
-            return;
-        }
+        if (!text) return;
 
-        // Show loading state
         analyzeBtn.disabled = true;
         loader.style.display = 'block';
-        btnText.style.opacity = '0';
+        btnText.style.display = 'none';
         resultArea.style.display = 'none';
 
         try {
             const response = await fetch('/predict', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text }),
             });
 
             const data = await response.json();
 
             if (data.error) {
-                alert('Error: ' + data.error);
+                alert('Analysis Error: ' + data.error);
             } else {
                 displayResult(data);
                 recordAnalysis(data.prediction, data.confidence);
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to analyze the news. Is the server running?');
+            alert('Connection failure to verification engine.');
         } finally {
-            // Hide loading state
             analyzeBtn.disabled = false;
             loader.style.display = 'none';
-            btnText.style.opacity = '1';
+            btnText.style.display = 'block';
         }
     });
 
@@ -114,34 +104,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function displayResult(data) {
-        let typeClass, labelText, analysisSummary;
+        let statusClass, labelText, analysisSummary;
         
         if (data.prediction === 'Fake') {
-            typeClass = 'fake';
-            labelText = 'Suspicious Pattern';
-            analysisSummary = 'High correlation with known misinformation linguistic markers.';
+            statusClass = 'fake-status';
+            labelText = 'Linguistic Variance Flagged';
+            analysisSummary = 'Classification: High variance from verified neutral news patterns.';
         } else if (data.prediction === 'Real') {
-            typeClass = 'real';
-            labelText = 'Verified Authentic';
-            analysisSummary = 'Matches factual reporting structures and neutral linguistic patterns.';
+            statusClass = 'real-status';
+            labelText = 'Linguistic Pattern Verified';
+            analysisSummary = 'Classification: Consistent with authentic editorial structures.';
         } else {
-            typeClass = 'uncertain';
-            labelText = 'Neutral / Inconclusive';
-            analysisSummary = 'Insufficient stylistic markers to determine authenticity with high confidence.';
+            statusClass = 'uncertain-status';
+            labelText = 'Variance Inconclusive';
+            analysisSummary = 'Classification: Statistical markers fall outside high-confidence thresholds.';
         }
         
         resultArea.innerHTML = `
-            <div class="result-card ${typeClass}">
-                <div class="status-badge">${labelText}</div>
-                <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">${analysisSummary}</h2>
-                <div class="confidence-meter">
-                    <div class="confidence-fill" style="width: ${data.confidence}%"></div>
+            <div class="result-box">
+                <div class="status-indicator ${statusClass}">${labelText}</div>
+                <div class="analysis-text">${analysisSummary}</div>
+                <div class="metric-label">
+                    <span>Confidence Coefficient</span>
+                    <span>${data.confidence}%</span>
                 </div>
-                <div class="confidence">Confidence Score: ${data.confidence}%</div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${data.confidence}%"></div>
+                </div>
             </div>
         `;
         
         resultArea.style.display = 'block';
-        resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 });

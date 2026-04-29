@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruthSense | AI-Powered Fake News Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary-soft); margin-bottom: 0.5rem; font-weight: 700;">Intelligence Verification Engine</div>
+            <h1>TruthSense Analyst</h1>
+            <p>Enterprise-grade linguistic analysis to determine article authenticity.</p>
+        </header>
+
+        <main class="card">
+            <div class="input-group">
+                <label for="news-input">Article Content</label>
+                <textarea id="news-input" placeholder="Paste the news article title or text here to verify its authenticity..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button id="analyze-btn">
+                    <span class="btn-text">Analyze Authenticity</span>
+                    <div class="loader" id="loader"></div>
+                </button>
+                <button class="secondary" id="clear-btn">Clear</button>
+            </div>
+
+            <div id="result-area">
+                <!-- Results will be injected here -->
+            </div>
+        </main>
+
+        <section id="analytics-section" style="margin-top: 3rem; width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 700;">Session Analytics</h2>
+                <button id="reset-stats" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: rgba(220, 38, 38, 0.1); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 6px; flex: none;">Reset Data</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="card" style="padding: 1.5rem; text-align: center; border-radius: 12px;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">Total Analyzed</div>
+                    <div id="stat-total" style="font-size: 2rem; font-weight: 800;">0</div>
+                </div>
+                <div class="card" style="padding: 1.5rem; text-align: center; border-radius: 12px;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">Verified Real</div>
+                    <div id="stat-real" style="font-size: 2rem; font-weight: 800; color: var(--success);">0</div>
+                </div>
+                <div class="card" style="padding: 1.5rem; text-align: center; border-radius: 12px;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem;">Flagged Fake</div>
+                    <div id="stat-fake" style="font-size: 2rem; font-weight: 800; color: var(--danger);">0</div>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 1.5rem; border-radius: 12px;">
+                <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem;">Recent Activity Log</div>
+                <div class="table-container">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="text-align: left; color: var(--text-secondary); border-bottom: 1px solid var(--border);">
+                                <th style="padding-bottom: 0.5rem; font-weight: 500;">Timestamp</th>
+                                <th style="padding-bottom: 0.5rem; font-weight: 500;">Result</th>
+                                <th style="padding-bottom: 0.5rem; font-weight: 500;">Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activity-log">
+                            <!-- Log entries injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="no-activity" style="text-align: center; padding: 2rem; color: var(--text-secondary); font-size: 0.8rem;">No activity recorded in this session.</div>
+            </div>
+        </section>
+
+        <section style="margin-top: 4rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; width: 100%;">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px;">
+                <h3 style="font-size: 0.9rem; color: var(--primary-soft); margin-bottom: 0.5rem;">Linguistic Analysis</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Examines N-gram frequencies to identify stylistic signatures common in verified reporting.</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px;">
+                <h3 style="font-size: 0.9rem; color: var(--primary-soft); margin-bottom: 0.5rem;">Source De-biasing</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Neutralizes specific source tags to ensure the content itself is being evaluated fairly.</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px;">
+                <h3 style="font-size: 0.9rem; color: var(--primary-soft); margin-bottom: 0.5rem;">Pattern Weights</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Utilizes a 5,000-feature logistic regression matrix for stable cross-era verification.</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 4rem; color: var(--text-secondary); font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 2rem; width: 100%;">
+            TruthSense Intelligence &bull; Internal Verification Engine v2.4
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
-# TruthSense AI: Fake News Detection System
+# TruthSense : Fake News Detection System
 
-TruthSense AI is a professional-grade machine learning application designed to identify and classify news articles as "Real" or "Fake" with high precision. It utilizes advanced Natural Language Processing (NLP) and the XGBoost gradient boosting framework.
+TruthSense is a professional-grade machine learning application designed to identify and classify news articles as "Real" or "Fake" with high precision. It utilizes advanced Natural Language Processing (NLP) and the XGBoost gradient boosting framework.
 
 ## 🚀 Features
 - **High Accuracy**: Achieved **99.73% accuracy** on the ISOT dataset.
